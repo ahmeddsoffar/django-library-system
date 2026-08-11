@@ -1,4 +1,5 @@
 from django.db import transaction
+from rest_framework.throttling import ScopedRateThrottle
 
 from .models import Author, Book, Category , BorrowTransaction
 from .permissions import IsStaffOrReadOnly ,IsOwnerOrStaff
@@ -40,6 +41,9 @@ class BookViewSet(viewsets.ModelViewSet):
 
     
 class BorrowViewSet(viewsets.ModelViewSet): ## modelviewset is too muh here later will use mixins to limit the actions
+
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "user"
 
     permission_classes = [IsAuthenticated, IsOwnerOrStaff]
 
