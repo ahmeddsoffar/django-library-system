@@ -1,8 +1,9 @@
-# from django.contrib.auth import get_user_model
-#from .models import MemberProfile
+from django.db import transaction
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
+
+from .models import MemberProfile
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -21,9 +22,12 @@ class RegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"password": "Password fields didn't match."})
         return data
     
+    @transaction.atomic ## as there are 2 models that need to be created user and memberprofile
     def create(self, validated_data):
         validated_data.pop('password_confirm')
-        return User.objects.create_user(**validated_data) ## ** here unpack of the dic happened
+        user = User.objects.create_user(**validated_data) ## ** here unpack of the dic happened
+        MemberProfile.objects.create(user=user)
+        return user
 
 
 
