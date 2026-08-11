@@ -1,3 +1,5 @@
+from django.db import transaction
+
 from .models import Author, Book, Category , BorrowTransaction
 from .permissions import IsStaffOrReadOnly ,IsOwnerOrStaff
 from .serializers import AuthorSerializer, BookReadSerializer, BookWriteSerializer, CategorySerializer ,BorrowCreateSerializer, BorrowReadSerializer
@@ -58,21 +60,22 @@ class BorrowViewSet(viewsets.ModelViewSet): ## modelviewset is too muh here late
         return BorrowReadSerializer
 
     def perform_create(self, serializer): ## creation of a new book borrow  serialzer here is passed from get_serializer_class
-        book = serializer.validated_data["book"]
+        with transaction.atomic(): ## treat all transction as single work either it all works or all failll
+            book = book.objects.select_for_update().get(pk=serializer.validated_data["book"].pk)
 
-        if book.available_copies <= 0:
-            raise ValidationError(
-                "No copies of this book are available."
+            if book.available_copies <= 0:
+                raise ValidationError(
+                    "No copies of this book are available."
+                )
+
+            book.available_copies -= 1
+            book.save()
+
+            serializer.save(
+                member=self.request.user.member_profile,
+                due_date=timezone.localdate()
+                + timedelta(days=settings.LOAN_PERIOD_DAYS)
             )
-
-        book.available_copies -= 1
-        book.save()
-
-        serializer.save(
-            member=self.request.user.member_profile,
-            due_date=timezone.localdate()
-            + timedelta(days=settings.LOAN_PERIOD_DAYS)
-        )
 
     @action(detail=True, methods=["post"]) ## detail means i am working with a single object and only post allowed
     def return_book(self, request, pk=None):
