@@ -65,7 +65,8 @@ class BorrowViewSet(viewsets.ModelViewSet): ## modelviewset is too muh here late
 
     def perform_create(self, serializer): ## creation of a new book borrow  serialzer here is passed from get_serializer_class
         with transaction.atomic(): ## treat all transction as single work either it all works or all failll
-            book = book.objects.select_for_update().get(pk=serializer.validated_data["book"].pk)
+             ## pervent race condtion as get this book id and lock 
+            book = Book.objects.select_for_update().get(pk=serializer.validated_data["book"].pk)
 
             if book.available_copies <= 0:
                 raise ValidationError(
