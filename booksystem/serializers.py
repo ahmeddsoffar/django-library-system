@@ -34,7 +34,7 @@ class BookWriteSerializer(serializers.ModelSerializer): ## serializer for creati
         return cleaned
     
     def validate_number_of_copies(self, attrs):
-        total = attrs.get("total_copies", getattr(self.instance, "total_copies", 0)) ## to be support partial updates used getattr
+        total = attrs.get("total_copies", getattr(self.instance, "total_copies", 0)) ## helps to work with partial udpate so if the user sends only available copies we get the total copies from the instance
         available = attrs.get("available_copies", getattr(self.instance, "available_copies", 0))
 
         if available > total:

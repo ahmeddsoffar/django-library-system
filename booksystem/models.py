@@ -50,7 +50,7 @@ class Book(models.Model):
 
 class BorrowTransaction(models.Model):
     class Status(models.TextChoices):## creating a fixed set of choices as status
-        ACTIVE = "ACTIVE", "Active" ## the actuak value stored in db is ACTIVE and the other for human readable
+        ACTIVE = "ACTIVE", "Active" ## the actual value stored in db is ACTIVE and the other for human readable
         RETURNED = "RETURNED", "Returned"
         OVERDUE = "OVERDUE", "Overdue"
 

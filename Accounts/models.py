@@ -6,8 +6,8 @@ class MemberProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='member_profile') 
 
     ## null for tells db this can be null , and blank telss django validation it can be empty
-    ##phone_number = models.CharField(max_length=15, null=True, blank=True) 
-    ##address = models.TextField(null=True, blank=True)
+    phone_number = models.CharField(max_length=15, null=True, blank=True)
+    address = models.TextField(null=True, blank=True)
 
     max_books_allowed = models.PositiveIntegerField(default=5)
     active_status = models.BooleanField(default=True)

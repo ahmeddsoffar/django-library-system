@@ -5,9 +5,9 @@ from .models import Author, Book, BorrowTransaction, Category
 
 @admin.register(MemberProfile)
 class MemberProfileAdmin(admin.ModelAdmin):
-    list_display = ["user", "max_books_allowed", "active_status"]
+    list_display = ["user", "phone_number", "max_books_allowed", "active_status"]
     list_filter = ["active_status"]
-    search_fields = ["user__username", "user__email"]
+    search_fields = ["user__username", "user__email", "phone_number"]
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
